@@ -1,0 +1,220 @@
+import random
+
+NumEn= int(input("Enter number of enemies:"))
+NumPC= int(input("Enter number of PCs:"))
+EnHealth = {}
+PCHealth = {}
+EnInit = {}
+PCInit= {}
+PCDSP= {}
+PCDSF= {}
+EnName= {}
+PCName= {}
+
+
+
+
+for i in range(1, (int(NumEn)+1)):
+    EnHealth[i]= int(input("Health of Enemy "+ str(i)+": "))
+    EnName[i]= input("Name of Enemy "+ str(i)+": ")
+
+for i in range(1, (int(NumPC)+1)):
+    PCHealth[i]= int(input("Health of Player "+ str(i)+": ")) 
+    PCName[i]= input("Name of PC "+ str(i)+": ")
+    PCDSP[i] = 0
+    PCDSF[i] = 0
+
+print("Roll initiative!")
+print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+
+for i in range(1, (int(NumPC)+1)):
+    PCInit[i]= int(input(PCName[i]+"'s initiative roll: ")) 
+    
+
+for i in range(1, (int(NumEn)+1)):
+    Mod= int(input(EnName[i]+"'s initiative modifier:"))
+    EnInit[i]= (random.randint(1,20) + Mod)
+    print(EnName[i]+ " rolled a "+str(EnInit[i]))
+print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+print ("Begin Combat")
+print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+
+def get_key(val, my_dict):
+    for key, value in my_dict.items():
+         if val == value:
+             return key
+ 
+    return -1
+def heal(target):
+    if target == "En":
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+        print("Enemy Targets:")
+        for i in range(1,NumEn+1):
+            print (str(EnName[i])+"'s health: "+ str(EnHealth[i]))
+        print("------------------------------------------------")
+        
+        while True:
+            targetname= input("Choose your target\n")
+            targetnum= get_key(targetname, EnName)
+            if targetnum in range(1,NumEn+1):
+                break
+            else:
+                print("Invalid target")
+        damage= int(input("How much healing did you do?\n"))
+        EnHealth[targetnum]=EnHealth[targetnum]+ damage
+        
+        print("------------------------------------------------")
+        for i in range(1,NumEn+1):
+            print (str(EnName[i])+"'s health: "+ str(EnHealth[i]))
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+        
+    if target == "PC":
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+        print("PC Targets:")
+        for i in range(1,NumPC+1):
+            print (str(PCName[i])+"'s health: "+ str(PCHealth[i]))
+        print("------------------------------------------------")
+        
+        while True:
+            targetname= input("Choose your target\n")
+            targetnum= get_key(targetname, PCName)
+            if targetnum in range(1,NumPC+1):
+                break
+            else:
+                print("Invalid target")
+        damage= int(input("How much healing did you do?\n"))
+        PCHealth[targetnum]=PCHealth[targetnum]+ damage
+        PCDSP[targetnum]= 0
+        PCDSF[targetnum]= 0
+        print("------------------------------------------------")
+        for i in range(1,NumPC+1):
+            print (str(PCName[i])+"'s health: "+ str(PCHealth[i]))
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+def attack(target):
+    if target == "En":
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+        print("Enemy Targets:")
+        for i in range(1,NumEn+1):
+            print (str(EnName[i])+"'s health: "+ str(EnHealth[i]))
+        print("------------------------------------------------")
+        
+        while True:
+            targetname= input("Choose your target\n")
+            targetnum= get_key(targetname, EnName)
+            if targetnum in range(1,NumEn+1):
+                break
+            else:
+                print("Invalid target")
+        damage= int(input("How much damage did you do?\n"))
+        EnHealth[targetnum]=EnHealth[targetnum]- damage
+        if EnHealth[targetnum]<=0:
+            print(EnName[targetnum]+" is dead")
+            EnHealth[targetnum]=0
+        print("------------------------------------------------")
+        for i in range(1,NumEn+1):
+            print (str(EnName[i])+"'s health: "+ str(EnHealth[i]))
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+        
+    if target == "PC":
+        print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+        print("PC Targets:")
+        for i in range(1,NumPC+1):
+            print (str(PCName[i])+"'s health: "+ str(PCHealth[i]))
+        print("------------------------------------------------")
+        
+        while True:
+            targetname= input("Choose your target\n")
+            targetnum= get_key(targetname, PCName)
+            if targetnum in range(1,NumPC+1):
+                break
+            else:
+                print("Invalid target")
+        damage= int(input("How much damage did you do?\n"))
+        while True:
+            if isinstance(damage, int) == True:
+                if damage > 0 and PCHealth[targetnum]==0:
+                    while True:
+                        atktype= input("Is the attack ranged or melee?\n")
+                        if atktype =="ranged":
+                            PCDSF[targetnum]= PCDSF[targetnum]+1
+                            if PCDSF[targetnum] == 3:
+                                    PCHealth[targetnum]= -1000
+                                    print(PCName[targetnum]+" has died")
+                            break
+                        if atktype == "melee":
+                            PCDSF[targetnum]= PCDSF[targetnum]+2
+                            if PCDSF[targetnum] == 3:
+                                    PCHealth[targetnum]= -1000
+                                    print(PCName[targetnum]+" has died")
+                            break
+                        
+                PCHealth[targetnum]=PCHealth[targetnum]- damage
+                if PCHealth[targetnum]<= 0:
+                    print(PCName[targetnum]+" is down")
+                    PCHealth[targetnum]= 0
+                print("------------------------------------------------")
+                for i in range(1,NumPC+1):
+                    print (str(PCName[i])+"'s health: "+ str(PCHealth[i]))
+                print("[][][][][][][][][][][][][][][][][][][][][][][][]")
+                break
+            else:
+                print("Please enter an integer")
+DMQ="y"
+while DMQ == "y":
+    for i in range(40,-2,-1):
+        
+        for j in range(1,NumPC+1):
+            if i == PCInit[j]:
+                
+                if PCHealth[j] > 0:
+                    print(PCName[j]+"'s turn")
+                    while True:
+                        print("choose action: attack, heal, or something else")
+                        action=input("Action:")
+                        if action == "attack":
+                            attack("En")
+                            break
+                        if action == "heal":
+                            heal("PC")
+                            break
+                        if action == "something else":
+                            break
+                    
+                    
+                if PCHealth[j] <= 0:
+                    if PCHealth[j] != -1000:
+                        print(PCName[j]+", roll a death Save")
+                        DS= int(input("Death save:"))
+                        if DS >= 10:
+                            print(PCName[j]+" passed a death save")
+                            PCDSP[j]= PCDSP[j] + 1
+                            if PCDSP[j] == 3:
+                                PCDSP[j] = 0
+                                print(PCName[j]+" is stable")
+                        if DS < 10:
+                            print(PCName[j]+" failed a death save")
+                            PCDSF[j]= PCDSF[j]+1
+                            if PCDSF[j] == 3:
+                                PCHealth[j]= -1000
+                                print(PCName[j]+" has died")
+                        print(PCName[j]+" has "+str(PCDSP[j])+ " passed death saves and "+ str(PCDSF[j])+" failed death saves")
+        for k in range(1,NumEn+1):
+            if i == EnInit[k]:
+                if EnHealth[k] > 0:
+                    print(EnName[k]+"'s turn")
+                    while True:
+                        print("choose action: attack, heal, or something else")
+                        action=input("Action:")
+                        if action == "attack":
+                            attack("PC")
+                            break
+                        if action == "heal":
+                            heal("En")
+                            break
+                        if action == "something else":
+                            break
+                
+            
+        if i == -1:
+            DMQ=input("Proceed to next round?(y/n)\n")
+print("Combat has ended")
